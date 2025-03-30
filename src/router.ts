@@ -4,7 +4,7 @@ export class RouterClient {
 
   constructor(serverKey: string, apiBaseUrl?: string) {
     this.serverKey = serverKey;
-    this.apiBaseUrl = apiBaseUrl || "https://api.mcp.so/v1";
+    this.apiBaseUrl = apiBaseUrl || "https://router.mcp.so/v1";
   }
 
   async listTools() {
