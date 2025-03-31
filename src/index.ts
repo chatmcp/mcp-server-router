@@ -29,8 +29,7 @@ function parseArgs() {
 
 const args = parseArgs();
 const server_key = args.server_key || process.env.SERVER_KEY || "";
-
-const routerClient = new RouterClient(server_key);
+const proxy_url = args.proxy_url || process.env.PROXY_URL || "";
 
 /**
  * Create an MCP server to proxy requests to the router.
@@ -38,7 +37,7 @@ const routerClient = new RouterClient(server_key);
 const server = new Server(
   {
     name: "mcprouter",
-    version: "0.1.0",
+    version: "0.1.3",
   },
   {
     capabilities: {
@@ -48,6 +47,12 @@ const server = new Server(
     },
   }
 );
+
+async function getRouterClient(server: Server): Promise<RouterClient> {
+  const client = await server.getClientVersion();
+
+  return new RouterClient(server_key, proxy_url, client);
+}
 
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   // todo: get resources from remote server
@@ -64,12 +69,16 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 });
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
+  const routerClient = await getRouterClient(server);
+
   const tools = await routerClient.listTools();
 
   return tools;
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  const routerClient = await getRouterClient(server);
+
   const name = request.params.name;
   const args = request.params.arguments;
 
@@ -98,6 +107,11 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
  */
 async function main() {
   const transport = new StdioServerTransport();
+
+  transport.onmessage = (message) => {
+    console.log("message", message);
+  };
+
   await server.connect(transport);
 }
 

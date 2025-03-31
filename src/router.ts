@@ -1,10 +1,20 @@
-export class RouterClient {
-  private apiBaseUrl: string;
-  private serverKey: string;
+export interface ClientInfo {
+  name: string;
+  version: string;
+}
 
-  constructor(serverKey: string, apiBaseUrl?: string) {
+export class RouterClient {
+  private proxyUrl: string;
+  private serverKey: string;
+  private client: ClientInfo;
+
+  constructor(serverKey: string, proxyUrl?: string, client?: ClientInfo) {
     this.serverKey = serverKey;
-    this.apiBaseUrl = apiBaseUrl || "https://router.mcp.so/v1";
+    this.proxyUrl = proxyUrl || "https://router.mcp.so/v1";
+    this.client = client || {
+      name: "mcprouter-client",
+      version: "0.1.3",
+    };
   }
 
   async listTools() {
@@ -17,13 +27,14 @@ export class RouterClient {
 
   async request(uri: string, body?: any) {
     try {
-      const url = `${this.apiBaseUrl}${uri}`;
+      const url = `${this.proxyUrl}${uri}`;
 
       const resp = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${this.serverKey}`,
+          "X-Client-Info": JSON.stringify(this.client),
         },
         body: JSON.stringify(body),
       });
