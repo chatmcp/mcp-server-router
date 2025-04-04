@@ -10,7 +10,7 @@ export class RouterClient {
 
   constructor(serverKey: string, proxyUrl?: string, client?: ClientInfo) {
     this.serverKey = serverKey;
-    this.proxyUrl = proxyUrl || "https://router.mcp.so/v1";
+    this.proxyUrl = proxyUrl || "https://rest.mcp.so/v1";
     this.client = client || {
       name: "mcprouter-client",
       version: "0.1.3",
