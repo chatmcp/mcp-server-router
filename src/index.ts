@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StdioServerTransport } from "./transport.js";
 import {
   CallToolRequestSchema,
   ListResourcesRequestSchema,
@@ -10,7 +10,6 @@ import {
   ListPromptsRequestSchema,
   GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { RouterClient } from "./router.js";
 
 /**
  * Parse command line arguments
@@ -48,12 +47,6 @@ const server = new Server(
   }
 );
 
-async function getRouterClient(server: Server): Promise<RouterClient> {
-  const client = await server.getClientVersion();
-
-  return new RouterClient(server_key, proxy_url, client);
-}
-
 server.setRequestHandler(ListResourcesRequestSchema, async () => {
   // todo: get resources from remote server
   return {
@@ -69,22 +62,20 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 });
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  const routerClient = await getRouterClient(server);
-
-  const tools = await routerClient.listTools();
-
-  return tools;
+  return {
+    tools: [],
+  };
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const routerClient = await getRouterClient(server);
-
-  const name = request.params.name;
-  const args = request.params.arguments;
-
-  const result = await routerClient.callTool(name, args);
-
-  return result;
+  return {
+    type: "text",
+    text: [
+      {
+        content: "not implemented",
+      },
+    ],
+  };
 });
 
 server.setRequestHandler(ListPromptsRequestSchema, async () => {
@@ -107,6 +98,8 @@ server.setRequestHandler(GetPromptRequestSchema, async (request) => {
  */
 async function main() {
   const transport = new StdioServerTransport();
+  transport.setProxyUrl(proxy_url);
+  transport.setServerKey(server_key);
 
   transport.onmessage = (message) => {
     console.log("message", message);

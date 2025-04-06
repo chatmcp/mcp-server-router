@@ -1,6 +1,6 @@
 {
   "name": "mcprouter",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "proxy for remote mcp servers.",
   "private": false,
   "type": "module",
