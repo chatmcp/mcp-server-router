@@ -36,7 +36,7 @@ const proxy_url = args.proxy_url || process.env.PROXY_URL || "";
 const server = new Server(
   {
     name: "mcprouter",
-    version: "0.1.3",
+    version: "0.1.7",
   },
   {
     capabilities: {

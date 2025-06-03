@@ -6,7 +6,7 @@ import {
 } from "@modelcontextprotocol/sdk/shared/stdio.js";
 import { JSONRPCMessage } from "@modelcontextprotocol/sdk/types.js";
 import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
-import { log } from "./utils.js";
+import { getUniSeq, log } from "./utils.js";
 
 /**
  * Server transport for stdio: this communicates with a MCP client by reading from the current process' stdin and writing to stdout.
@@ -69,7 +69,7 @@ export class StdioServerTransport implements Transport {
     try {
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
-        "X-Request-ID": crypto.randomUUID(),
+        "X-Request-ID": getUniSeq(),
         "X-Request-From": "mcp-server-router",
       };
 
